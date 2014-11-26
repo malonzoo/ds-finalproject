@@ -226,10 +226,3 @@ function GraphVertex(data) {
 		return false;
 	}
 }
-
-/**
- * Interface for the ADT Graph Vertex
- **/
-function Graph() {
-
-}
