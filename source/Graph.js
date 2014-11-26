@@ -35,6 +35,7 @@ function Graph() {
 	 */
 	getVertex: function(data) {
 		 var allKeys = hash.values();
+
 		 for (var i = 0; i < allKeys.length; i++) {
 		 	if (allKeys[i].data === data ){
 		 		return allKeys[i];
@@ -226,12 +227,7 @@ function GraphVertex(data) {
 	 * @return true if the edge exists
 	 */
 	hasEdge: function(vertex2) {
-		for(var i = 0; i < neighbors.length; i++){
-			if ( neighbors[i] === vertex2 )
-				return true;
-		}
-
-		return false;
+		return neighbors.indexOf(vertex2) > -1 ? true : false ;
 	}
 }
 
