@@ -35,7 +35,7 @@ function Graph() {
 	 */
 	getVertex: function(data) {
 		 var allKeys = hash.values();
-		 for (var i = 0; i < allKeys.length; i++){
+		 for (var i = 0; i < allKeys.length; i++) {
 		 	if (allKeys[i].data === data ){
 		 		return allKeys[i];
 		 	}
@@ -50,7 +50,7 @@ function Graph() {
 	 * @param vertex2
 	 */
 	addEdge: function(vertex1, vertex2) {
-		if ( hash.contains(vertex1) && hash.contains(vertex2) {
+		if ( this.hasVertex(vertex1) && this.hasVertex(vertex2) ) {
 			// add vertex2 to the list of neighbors of vertex1
 			vertex1.setEdge(vertex2);
 		
@@ -67,7 +67,7 @@ function Graph() {
 	 * @param vertex2
 	 */
 	deleteEdge: function(vertex1, vertex2) {
-		if ( hash.contains(vertex1) && hash.contains(vertex2){
+		if ( this.hasVertex(vertex1) && this.hasVertex(vertex2) ) {
 			// delete vertex2 from the list of neighbors of vertex1
 			vertex1.deleteEdge(vertex2);
 		
@@ -89,7 +89,7 @@ function Graph() {
 		// we just have to check if vertex2 is in the list of neighbors
 		// of vertex1, since checking to see if vertex1 is in the list 
 		// of vertex2 would be redundant 
-		if ( hash.contains(vertex1) && hash.contains(vertex2){
+		if ( this.hasVertex(vertex1) && this.hasVertex(vertex2) ){
 			return vertex1.hasEdge(vertex2);
 		}
 		else
@@ -111,11 +111,11 @@ function Graph() {
 	 */
 	dfs: function(v) {
 		// start a set and whenever you visit a vertex, add it to a set
-		Set<GraphVertex<T>> visitSet = new HashSet<GraphVertex<T>>();
-		List<GraphVertex<T>> toReturn = new ArrayList<GraphVertex<T>>();
+		var visitSet = new HashSet();
+		var toReturn = [];
 		
 		visitSet.add(v);	// label the passed vertex as visited
-		toReturn.add(v);	// add the passed vertex to the ordered list of nodes visited
+		toReturn.push(v);	// add the passed vertex to the ordered list of nodes visited
 		
 		toReturn = dfsRec(v, visitSet, toReturn);
 		
@@ -131,25 +131,16 @@ function Graph() {
 	 */
 	dfsRec: function(v, set, list)
 	{
-		
-		// set an iterator to go through the neighbors of the passed vertex
-		Iterator<GraphVertex<T>> iterator = v.getNeighbors().iterator(); 
-		GraphVertex<T> current;
-		
-		// go through the set of neighbors of the passed vertex, v
-		while (iterator.hasNext())
-		{
-			current = iterator.next();
-			
-			// if the set of visited nodes doesn't contain the current neighbor
-			if ( !set.contains(current) )
-			{
-				set.add(current);			// label the passed vertex as visited
-				list.add(current); 			// add the vertex to the list
-				dfsRec(current, set, list);	// recurse on the current vertex
+		var current;
+		for (var i = 0; i < (v.neighbors).length; i++) {
+			current = (list.neighbors)[i];
+			if ( !(set.contains(current)) ) {
+				set.add( current );
+				list.push( current );
+				dfsRec(current, set, list);
 			}
 		}
-				
+
 		return list;
 	}
 	
@@ -162,33 +153,33 @@ function Graph() {
 	bfs: function(v)
 	{
 		// a set that will contain all the vertices that have been visited / "white"
-		Set<GraphVertex<T>> visitSet = new HashSet<GraphVertex<T>>();
+		var visitSet = new HashSet();
 		visitSet.add(v);
 		
 		// a list that will have all the vertices as they are visited
-		List<GraphVertex<T>> toReturn = new ArrayList<GraphVertex<T>>();
-		toReturn.add(v);
+		var toReturn = [];
+		toReturn.push(v);
 		
 		// start a queue, you add things to the queue; dequeue when in a while loop
-		Queue<GraphVertex<T>> queue = new LinkedList<GraphVertex<T>>();
-		queue.add(v);
+		var queue = [];
+		queue.push(v);
 		
 		// loop through all the queue, those that aren't visited are added to the queue and then made visited
-		while (!queue.isEmpty())
+		while ( queue.length != 0 )
 		{
-			v = queue.poll();
+			v = queue.shift();
 			
-			for (int x = 0; x < v.getNeighbors().size(); x++)
+			for (int x = 0; x < (v.neighbors).size(); x++)
 			{
 				// if the neighbor has not yet been visited, meaning it is not in the visitSet
-				if ( visitSet.contains(v.getNeighbors().get(x)) == false )
+				if ( !(visitSet.contains( (v.neighbors)[x] )) )
 				{
 					// then add said neighbor vertex to the visitSet
-					visitSet.add( v.getNeighbors().get(x) );
+					visitSet.add( (v.neighbors)[x] );
 					// and add said neighbor vertex to the queue
-					queue.add( v.getNeighbors().get(x) );
+					queue.push( (v.neighbors)[x] );
 					// and add it to the list of arrays visited
-					toReturn.add( v.getNeighbors().get(x) );
+					toReturn.push( (v.neighbors)[x] );
 				}			
 			}
 		}
@@ -198,6 +189,54 @@ function Graph() {
 	}
 }
 
+/**
+ *	One vertex in a graph
+ *	@param the data stored at one graph vertex
+ */
+function GraphVertex(data) {
+	this.data = data;
+	neighbors = [];
+
+	/**
+	 * Sets the data for this vertex 
+	 * @param data
+	 */
+	setData: function(newData) {
+		this.data = newData;
+	}
+
+	/**
+	 * Sets an an edge between this vertex and the passed vertex
+	 * @param vertex2
+	 */
+	setEdge: function(newVertex) {
+		neighbors.push(newVertex);
+	}
+
+	/**
+	 * Deletes an edge between the this vertex and the passed vertex
+	 */
+	deleteEdge: function(oldVertex) {
+		neighbors.pop(oldVertex);
+	}
+
+	/**
+	 * Checks to see if there is an edge between vertex2 and this graph vertex
+	 * @param vertex2
+	 * @return true if the edge exists
+	 */
+	hasEdge: function(vertex2) {
+		for(var i = 0; i < neighbors.length; i++){
+			if ( neighbors[i] === vertex2 )
+				return true;
+		}
+
+		return false;
+	}
+}
+
+//code.stephenmorley.org
+//function Queue(){var a=[],b=0;this.getLength=function(){return a.length-b};this.isEmpty=function(){return 0==a.length};this.enqueue=function(b){a.push(b)};this.dequeue=function(){if(0!=a.length){var c=a[b];2*++b>=a.length&&(a=a.slice(b),b=0);return c}};this.peek=function(){return 0<a.length?a[b]:void 0}};
 /**
  * Copyright 2013 Tim Down.
  *
