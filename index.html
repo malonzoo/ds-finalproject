@@ -22,17 +22,38 @@
                     <h2>Robber Barons Foundation Donor Network</h2>
                     <svg id="donorGraph"></svg>
                 </div>
-                
                 <div class="col-sm-3" id="right">
-                    <div class="donorInfo"></div>
+                    <div class="profile">
+                        <h2></h2>
+                    </div>
                 </div>
             </div>
         </div>
         
         <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
         <script>
+            var palette = {
+              "lightgray": "#819090",
+              "gray": "#708284",
+              "mediumgray": "#536870",
+              "darkgray": "#475B62",
+
+              "darkblue": "#0A2933",
+              "darkerblue": "#042029",
+
+              "paleryellow": "#FCF4DC",
+              "paleyellow": "#EAE3CB",
+              "yellow": "#A57706",
+              "orange": "#BD3613",
+              "red": "#D11C24",
+              "pink": "#C61C6F",
+              "purple": "#595AB7",
+              "blue": "#2176C7",
+              "green": "#259286",
+              "yellowgreen": "#738A05"
+          };
             
-            var width = 960,
+            var width = $("#left").width(),
             height = 500;
 
             var radius = d3.scale.sqrt()
@@ -51,7 +72,7 @@
               force
                   .nodes(graph.nodes)
                   .links(graph.links)
-                  .gravity(0.1)
+                  .gravity(0.07)
                   .linkDistance(150)
                   .charge(-1000)
                   .on("tick", tick)
@@ -70,37 +91,46 @@
 
               var node = svg.selectAll(".node")
                   .data(graph.nodes)
-                .enter().append("g")
+                  .enter().append("g")
                   .attr("class", "node")
-                  .call(force.drag);
+                  .call(force.drag)
+                  .on('mouseover', function(d) {
+                      d3.select('h2')
+                      .text(d.atom)
+                      .transition()
+                      .style('opacity', 1);
+                  })
+                  .on('mouseout', function(d) {
+                      d3.select('h2')
+                      .text("Robber Barons Foundation Donor Network")
+                      .duration(1500)
+                      .style('opacity', 0);
+                  });
 
               node.append("circle")
                   .attr("r", function(d) { return radius(Math.pow((d.size), 2)); })
                   .style("fill", function(d) { 
                     switch (d.size) {
                         case 1: 
-                            return  palette.pink; 
+                            return  palette.blue; 
                             break;
                         case 2: 
-                            return  palette.pink; 
+                            return  palette.green; 
                             break;
                         case 3: 
-                            return  palette.pink; 
+                            return  palette.yellow; 
                             break;
                         case 4: 
-                            return  palette.pink; 
+                            return  palette.purple; 
                             break;
                         case 5: 
                             return  palette.pink; 
                             break;
                         case 6: 
-                            return  palette.pink; 
-                            break;
-                        case 7: 
-                            return  palette.pink; 
+                            return  palette.red; 
                             break;
                         default:
-                            return palette.pink;
+                            return palette.red;
                       }
                   });
                 
@@ -118,31 +148,6 @@
 
                 node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
               }
-            });
-            
-            $(function () {
-                "use strict";
-                var resizeTracker;
-                // Counteracts all transforms applied above an element.
-                // Apply a translation to the element to have it remain at a local position
-                var unscale = function (el) {
-                    var svg = el.ownerSVGElement.ownerSVGElement;
-                    var xf = el.scaleIndependentXForm;
-                    if (!xf) {
-                        // Keep a single transform matrix in the stack for fighting transformations
-                        xf = el.scaleIndependentXForm = svg.createSVGTransform();
-                        // Be sure to apply this transform after existing transforms (translate)
-                        el.transform.baseVal.appendItem(xf);
-                    }
-                    var m = svg.getTransformToElement(el.parentNode);
-                    m.e = m.f = 0; // Ignore (preserve) any translations done up to this point
-                    xf.setMatrix(m);
-                };
-                [].forEach.call($("text, .tick"), unscale);
-                $(window).resize(function () {
-                    if (resizeTracker) clearTimeout(resizeTracker);
-                    resizeTracker = setTimeout(function () { [].forEach.call($("text, .tick"), unscale); }, 100);
-                });
             });
         </script>
     </body>
