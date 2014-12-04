@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"> <!-- no zoom -->
+        <meta name="description" content="Final Project for CS211">
+        <meta name="author" content="Camille Malonzo">
+        <title></title>
+
+        <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+        <script src="bootstrap/js/bootstrap.js" type="text/javascript"></script>
+    
+        <script src="source/donorGraph.js"></script> 
+        <link href="css/main.css" rel="stylesheet">
+    </head>
+    
+    <body>
+        <div class="container jumbotron" id="overview">
+            <div class="row">
+                <div class="col-sm-9" id="left">
+                    <h2>Robber Barons Foundation Donor Network</h2>
+                    <svg id="donorGraph"></svg>
+                </div>
+                
+                <div class="col-sm-3" id="right">
+                    <div class="donorInfo"></div>
+                </div>
+            </div>
+        </div>
+        
+        <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+        <script>
+            
+            var width = 960,
+            height = 500;
+
+            var radius = d3.scale.sqrt()
+                .range([0, 6]);
+
+            var svg = d3.select("#donorGraph")
+                .attr("width", width)
+                .attr("height", height);
+
+            var force = d3.layout.force()
+                .size([width, height])
+                .charge(-400)
+                .linkDistance(function(d) { return radius(d.source.size) + radius(d.target.size) + 20; });
+
+            d3.json("graph.json", function(graph) {
+              force
+                  .nodes(graph.nodes)
+                  .links(graph.links)
+                  .gravity(0.1)
+                  .linkDistance(150)
+                  .charge(-1000)
+                  .on("tick", tick)
+                  .start();
+
+              var link = svg.selectAll(".link")
+                    .data(graph.links)
+                    .enter().append("g")
+                    .attr("class", "link");
+
+              link.append("line")
+                  .style("stroke-width", function(d) { return (d.bond * 2 - 1) * 2 + "px"; });
+
+              link.filter(function(d) { return d.bond > 1; }).append("line")
+                  .attr("class", "separator");
+
+              var node = svg.selectAll(".node")
+                  .data(graph.nodes)
+                .enter().append("g")
+                  .attr("class", "node")
+                  .call(force.drag);
+
+              node.append("circle")
+                  .attr("r", function(d) { return radius(Math.pow((d.size), 2)); })
+                  .style("fill", function(d) { 
+                    switch (d.size) {
+                        case 1: 
+                            return  palette.pink; 
+                            break;
+                        case 2: 
+                            return  palette.pink; 
+                            break;
+                        case 3: 
+                            return  palette.pink; 
+                            break;
+                        case 4: 
+                            return  palette.pink; 
+                            break;
+                        case 5: 
+                            return  palette.pink; 
+                            break;
+                        case 6: 
+                            return  palette.pink; 
+                            break;
+                        case 7: 
+                            return  palette.pink; 
+                            break;
+                        default:
+                            return palette.pink;
+                      }
+                  });
+                
+              node.append("text")
+                  .attr("dy", ".35em")
+                  .attr("text-anchor", "beginning")
+                  .text(function(d) { return d.atom; });
+
+              function tick() {
+                link.selectAll("line")
+                    .attr("x1", function(d) { return d.source.x; })
+                    .attr("y1", function(d) { return d.source.y; })
+                    .attr("x2", function(d) { return d.target.x; })
+                    .attr("y2", function(d) { return d.target.y; });
+
+                node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+              }
+            });
+            
+            $(function () {
+                "use strict";
+                var resizeTracker;
+                // Counteracts all transforms applied above an element.
+                // Apply a translation to the element to have it remain at a local position
+                var unscale = function (el) {
+                    var svg = el.ownerSVGElement.ownerSVGElement;
+                    var xf = el.scaleIndependentXForm;
+                    if (!xf) {
+                        // Keep a single transform matrix in the stack for fighting transformations
+                        xf = el.scaleIndependentXForm = svg.createSVGTransform();
+                        // Be sure to apply this transform after existing transforms (translate)
+                        el.transform.baseVal.appendItem(xf);
+                    }
+                    var m = svg.getTransformToElement(el.parentNode);
+                    m.e = m.f = 0; // Ignore (preserve) any translations done up to this point
+                    xf.setMatrix(m);
+                };
+                [].forEach.call($("text, .tick"), unscale);
+                $(window).resize(function () {
+                    if (resizeTracker) clearTimeout(resizeTracker);
+                    resizeTracker = setTimeout(function () { [].forEach.call($("text, .tick"), unscale); }, 100);
+                });
+            });
+        </script>
+    </body>
+    
+    <!-- <script type="text/javascript" src="/javascripts/retina.min.js"></script> -->
+</html>
