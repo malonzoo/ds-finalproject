@@ -17,4 +17,8 @@ can identify-- according to "degrees" which networks would be best to utilize.
 TO RUN:
 To run this application, create a .json file with a template similar to the
 example graph.json file template. Put into the directory of this application and
-then open the index.html file in a web browser. 
+then open the index.html file in a web browser.
+
+CREDITS:
+1. d3js.org
+2. wikipedia for all the pictures of the robber barons

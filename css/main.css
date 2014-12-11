@@ -1,3 +1,8 @@
+@font-face {
+  font-family: Avenir;
+  src: url('Avenir.tcc');
+}
+
 body {
     top: 0px;
     margin: 0px;
@@ -40,6 +45,7 @@ h2 {
   text-align: left;
   font-size: .75em;
   border: 1px rgba(207, 207, 207, 0.5) solid;
+  background: rgba(207, 207, 207, 0.2);
 }
 .prof-img {
   width: 100%;
