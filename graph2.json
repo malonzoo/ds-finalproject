@@ -1,0 +1,28 @@
+{
+    "nodes": [
+        {"atom": "Andrew Carnegie"      , "size": 1,    "donation": 500000,   "pic": "images/donors-final/carnegie.jpg"},
+        {"atom": "Henry Ford"           , "size": 2,    "donation": 500000,   "pic": "images/donors-final/ford.jpg"},
+        {"atom": "John D. Rockefeller"  , "size": 6,    "donation": 1000000,  "pic": "images/donors-final/rockefeller.jpg"},
+        {"atom": "Cornelius Vanderbilt" , "size": 1,    "donation": 200000,   "pic": "images/donors-final/vanderbilt.jpg"},
+        {"atom": "Henry Clay Frick"     , "size": 2,    "donation": 200000,   "pic": "images/donors-final/frick.jpg"},
+        {"atom": "John Jacob Astor"     , "size": 5,    "donation": 100000,   "pic": "images/donors-final/astor.jpg"},
+        {"atom": "JP Morgan"            , "size": 1,    "donation": 50000,    "pic": "images/donors-final/morgan.jpg"},
+        {"atom": "Andrew W. Mellon"     , "size": 2,    "donation": 50000,    "pic": "images/donors-final/mellon.jpg"}
+ ],
+    "links": [
+        {"source": 0, "target": 2,  "bond": 1},
+
+        {"source": 1, "target": 2,  "bond": 1},
+        {"source": 1, "target": 5,  "bond": 1},
+
+        {"source": 2, "target": 3,  "bond": 1},
+        {"source": 2, "target": 4,  "bond": 1},
+        {"source": 2, "target": 5,  "bond": 1},
+        {"source": 2, "target": 7,  "bond": 1},
+
+        {"source": 4, "target": 5,  "bond": 1},
+
+        {"source": 6, "target": 5,  "bond": 1},
+        {"source": 7, "target": 5,  "bond": 1}
+  ]
+}
