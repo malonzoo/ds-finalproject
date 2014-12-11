@@ -7,31 +7,70 @@
         <meta name="author" content="Camille Malonzo">
         <title></title>
 
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
         <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
         <script src="bootstrap/js/bootstrap.js" type="text/javascript"></script>
-    
-        <script src="source/donorGraph.js"></script> 
+        <script src="source/scripts/helper/jshashtable/hashset.js"></script>
+        <script src="source/scripts/helper/jshashtable/hashtable.js"></script>
+        <script src="source/Graph.js"></script>
         <link href="css/main.css" rel="stylesheet">
     </head>
-    
+
     <body>
         <div class="container jumbotron" id="overview">
             <div class="row">
                 <div class="col-sm-9" id="left">
-                    <h2>Robber Barons Foundation Donor Network</h2>
+                    <h2 id="networkTitle">Robber Barons Foundation Donor Network</h2>
                     <svg id="donorGraph"></svg>
                 </div>
                 <div class="col-sm-3" id="right">
                     <div class="profile">
-                        <h2></h2>
+                        <h2 class="profile-name">Donor Name</h2>
+                        <div class="profile-img"><img class="prof-img" src="images/donors-final/all.jpg"></div>
+                        <div class="profile-info">
+                          <table class="table">
+                            <tr>
+                              <th>Donation Total</th>
+                              <td class="profile-donation"></td>
+                            </tr>
+                            <tr>
+                              <th>Number of Friends</th>
+                              <td class="profile-numLinks"></td>
+                            </tr>
+                            <tr>
+                              <th>Value of 1st Degree Network</th>
+                              <td class="profile-1stDegree"></td>
+                            </tr>
+                            <tr>
+                              <th>Value of 2nd Degree Network</th>
+                              <td class="profile-2ndDegree"></td>
+                            </tr>
+                          </table>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
         <script>
+
+          var graphBack;
+          var json;
+
+          $.getJSON("graph.json", function(d) {
+            graphBack = new Graph();
+            json = d;
+            for (var i = 0; i < d.nodes.length; i++) {
+              var newVertex = new GraphVertex(d.nodes[i]);
+              graphBack.addVertex(newVertex);
+            }
+
+            for (var j = 0; j < d.links.length; j++) {
+              graphBack.addEdge( graphBack.getVertex(d.links[j].source), graphBack.getVertex(d.links[j].target) );
+            }
+          });
+
             var palette = {
               "lightgray": "#819090",
               "gray": "#708284",
@@ -52,9 +91,9 @@
               "green": "#259286",
               "yellowgreen": "#738A05"
           };
-            
+
             var width = $("#left").width(),
-            height = 500;
+                height = ($(window).height())-250;
 
             var radius = d3.scale.sqrt()
                 .range([0, 6]);
@@ -94,50 +133,95 @@
                   .enter().append("g")
                   .attr("class", "node")
                   .call(force.drag)
-                  .on('mouseover', function(d) {
-                      d3.select('h2')
-                      .text(d.atom)
+                  .on('click', function(d) {
+                    // find matching node in the graphBack
+                    var dBack = getCorrespNode(d);
+                    if (dBack != null) {
+                      d3.select('.profile-name')
+                      .text(dBack.data.atom)
                       .transition()
                       .style('opacity', 1);
-                  })
-                  .on('mouseout', function(d) {
-                      d3.select('h2')
-                      .text("Robber Barons Foundation Donor Network")
-                      .duration(1500)
-                      .style('opacity', 0);
+
+                      d3.select('.profile-donation')
+                      .text(formatDonation(dBack.data.donation))
+                      .transition()
+                      .style('opacity', 1);
+
+                      d3.select('.profile-numLinks')
+                      .text( dBack.neighbors.length )
+                      .transition()
+                      .style('opacity', 1);
+
+                      d3.select('.profile-1stDegree')
+                      .text( formatDonation( getGraph().valueDegreeN(dBack, 1)) )
+                      .transition()
+                      .style('opacity', 1);
+
+                      d3.select('.profile-2ndDegree')
+                      .text( formatDonation( getGraph().valueDegreeN(dBack, 2)) )
+                      .transition()
+                      .style('opacity', 1);
+
+                      d3.select('.prof-img').attr("src", dBack.data.pic);
+                    }
                   });
 
               node.append("circle")
-                  .attr("r", function(d) { return radius(Math.pow((d.size), 2)); })
-                  .style("fill", function(d) { 
-                    switch (d.size) {
-                        case 1: 
-                            return  palette.blue; 
+                  .attr("r", function(d) {
+                    var dBack = getCorrespNode(d);
+                    return radius(Math.pow((dBack.neighbors.length), 2));
+                    })
+                  .style("fill", function(d) {
+                    var dBack = getCorrespNode(d);
+                    switch (dBack.neighbors.length) {
+                        case 1:
+                            return  palette.blue;
                             break;
-                        case 2: 
-                            return  palette.green; 
+                        case 2:
+                            return  palette.green;
                             break;
-                        case 3: 
-                            return  palette.yellow; 
+                        case 3:
+                            return  palette.yellow;
                             break;
-                        case 4: 
-                            return  palette.purple; 
+                        case 4:
+                            return  palette.purple;
                             break;
-                        case 5: 
-                            return  palette.pink; 
+                        case 5:
+                            return  palette.pink;
                             break;
-                        case 6: 
-                            return  palette.red; 
+                        case 6:
+                            return  palette.red;
                             break;
                         default:
                             return palette.red;
                       }
                   });
-                
+
               node.append("text")
                   .attr("dy", ".35em")
                   .attr("text-anchor", "beginning")
                   .text(function(d) { return d.atom; });
+
+              function formatDonation(amt) {
+                return "$" + (amt + '').replace(/(\d)(?=(\d{3})+$)/g, '$1,');
+
+              }
+
+              /**
+               * @param d the node in the graph.json
+               */
+              function getCorrespNode(d) {
+                for (var i = 0; i < graphBack.hash.length; i++) {
+                  if (d.atom == graphBack.getVertex(i).data.atom) {
+                    return graphBack.getVertex(i);
+                  }
+                }
+                return null;
+              }
+
+              function getGraph() {
+                return graphBack;
+              }
 
               function tick() {
                 link.selectAll("line")
@@ -151,6 +235,6 @@
             });
         </script>
     </body>
-    
+
     <!-- <script type="text/javascript" src="/javascripts/retina.min.js"></script> -->
 </html>

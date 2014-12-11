@@ -1,4 +1,4 @@
-body {    
+body {
     top: 0px;
     margin: 0px;
     padding: 0px;
@@ -7,11 +7,11 @@ body {
     text-align: center;
         -ms-overflow-style: none;
     text-align: center;
-    
+
     font-family: Avenir;
-    
+
     background: url(../images/FallBeach.jpg) no-repeat center center fixed;
-    
+
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -20,6 +20,9 @@ body {
 h2 {
     font-weight: bold;
     text-align: left;
+}
+.profile-name {
+  text-align: center;
 }
 
 #overview {
@@ -31,7 +34,15 @@ h2 {
 }
 
 #right {
-    background-color:transparent;
+    background-color: rgba(207, 207, 207, 0.2);
+}
+#right table td, #right table th {
+  text-align: left;
+  font-size: .75em;
+  border: 1px rgba(207, 207, 207, 0.5) solid;
+}
+.prof-img {
+  width: 100%;
 }
 
 /** graph elements **/
